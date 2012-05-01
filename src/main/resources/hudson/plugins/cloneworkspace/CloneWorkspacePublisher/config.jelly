@@ -29,6 +29,9 @@ THE SOFTWARE.
   <f:entry title="${%Files to exclude from cloned workspace}" field="workspaceExcludeGlob" help="/plugin/clone-workspace-scm/workspaceExcludeGlob.html">
     <f:textbox />
   </f:entry>
+  <f:entry title="${%Use ant's default file exclusion list}" field="workspaceUseDefaultExcludes" help="/plugin/clone-workspace-scm/workspaceUseDefaultExcludes.html">
+   <f:checkbox />
+  </f:entry>
   <f:entry title="${%Criteria for build to be archived}" help="/plugin/clone-workspace-scm/parentCriteria.html">
     <select name="criteria">
       <f:option value="Any" selected='${instance.criteria=="Any"}'>${%Most Recent Completed Build}</f:option>

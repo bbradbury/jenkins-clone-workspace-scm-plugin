@@ -73,6 +73,11 @@ public class CloneWorkspacePublisher extends Recorder {
      * The glob we'll exclude from the archive.
      */
     private final String workspaceExcludeGlob;
+     
+    /**
+     * Whether or not we'll use ant's default file exclusion list.
+     */
+    private final String workspaceUseDefaultExcludes;
 
     /**
      * The criteria which determines whether we'll archive a given build's workspace.
@@ -87,10 +92,13 @@ public class CloneWorkspacePublisher extends Recorder {
      */
     private final String archiveMethod;
 
+    
+
     @DataBoundConstructor
-    public CloneWorkspacePublisher(String workspaceGlob, String workspaceExcludeGlob, String criteria, String archiveMethod) {
+    public CloneWorkspacePublisher(String workspaceGlob, String workspaceExcludeGlob, String workspaceUseDefaultExcludes, String criteria, String archiveMethod) {
         this.workspaceGlob = workspaceGlob.trim();
         this.workspaceExcludeGlob = Util.fixEmptyAndTrim(workspaceExcludeGlob);
+        this.workspaceUseDefaultExcludes = workspaceUseDefaultExcludes;
         this.criteria = criteria;
         this.archiveMethod = archiveMethod;
     }
@@ -111,6 +119,11 @@ public class CloneWorkspacePublisher extends Recorder {
     public String getWorkspaceExcludeGlob() {
         return workspaceExcludeGlob;
     }
+
+    public String getWorkspaceUseDefault() {
+        return workspaceUseDefaultExcludes;
+    }
+
 
     public String getCriteria() {
         return criteria;
@@ -150,6 +163,16 @@ public class CloneWorkspacePublisher extends Recorder {
             }
         }
 
+        boolean realUseDefaultExcludes = true;
+        //On error, default to using default exclude list
+        try {
+            realUseDefaultExcludes = Boolean.getBoolean(build.getEnvironment(listener).expand(workspaceUseDefaultExcludes));
+        } catch (IOException e) {
+            // We couldn't get an environment for some reason, so we'll just use true.
+            realUseDefaultExcludes = true;
+        }
+
+
         if (build.getResult().isBetterOrEqualTo(criteriaResult)) {
             listener.getLogger().println(Messages.CloneWorkspacePublisher_ArchivingWorkspace());
             FilePath ws = build.getWorkspace();
@@ -166,7 +189,7 @@ public class CloneWorkspacePublisher extends Recorder {
                 }
                 // This means we found something.
                 if((includeMsg==null) && (excludeMsg==null)) {
-                    DirScanner globScanner = new DirScanner.Glob(realIncludeGlob, realExcludeGlob);
+                    DirScanner globScanner = new DirScanner.Glob(realIncludeGlob, realExcludeGlob, realUseDefaultExcludes);
                     build.addAction(snapshot(build, ws, globScanner, listener, archiveMethod));
 
                     // Find the next most recent build meeting this criteria with an archived snapshot.

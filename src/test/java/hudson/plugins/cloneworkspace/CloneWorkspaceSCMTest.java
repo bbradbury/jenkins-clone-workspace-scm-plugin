@@ -78,7 +78,7 @@ public class CloneWorkspaceSCMTest extends HudsonTestCase {
     }
 
     public void testGlobCloning() throws Exception {
-        FreeStyleProject parentJob = createCloneParentProject(new CloneWorkspacePublisher("moduleB/**/*", null, "Any", "ZIP"));
+        FreeStyleProject parentJob = createCloneParentProject(new CloneWorkspacePublisher("moduleB/**/*", null, "false", "Any", "ZIP"));
         
         buildAndAssertSuccess(parentJob);
 
@@ -133,7 +133,7 @@ public class CloneWorkspaceSCMTest extends HudsonTestCase {
     }
 
     public void testNotFailedParentCriteriaDoesNotArchiveFailure() throws Exception {
-        FreeStyleProject parentJob = createCloneParentProject(new CloneWorkspacePublisher("**/*", null, "Not Failed", "ZIP"));
+        FreeStyleProject parentJob = createCloneParentProject(new CloneWorkspacePublisher("**/*", null, "false", "Not Failed", "ZIP"));
 
         parentJob.getBuildersList().add(new FailureBuilder());
         
@@ -191,7 +191,7 @@ public class CloneWorkspaceSCMTest extends HudsonTestCase {
     }
     
     private FreeStyleProject createCloneParentProject() throws Exception {
-        return createCloneParentProject(new CloneWorkspacePublisher("**/*", null, "Any", "zip"));
+        return createCloneParentProject(new CloneWorkspacePublisher("**/*", null, "false", "Any", "zip"));
     }
     
     private FreeStyleProject createCloneParentProject(CloneWorkspacePublisher cwp) throws Exception {
